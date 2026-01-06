@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | ToKnowHow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .gradient-circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.2;
+            z-index: -1;
+        }
+    </style>
+</head>
+
+<body class="bg-black">
+    <div class="gradient-circle bg-orange-600 w-80 h-80 top-1/4 left-1/4"></div>
+    <div class="gradient-circle bg-pink-600 w-64 h-64 bottom-1/4 right-1/4"></div>
+
+    <div class="glass p-10 md:p-14 rounded-[40px] w-full max-w-md shadow-2xl space-y-10 animate-fade-in relative">
+        <a href="/" class="absolute -top-16 left-0 text-gray-500 hover:text-white transition flex items-center gap-2">
+            <i class="fas fa-arrow-left text-xs"></i> Back to Home
+        </a>
+
+        <div class="text-center">
+            <h1 class="text-4xl font-extrabold mb-3 tracking-tight">Welcome <span class="text-gradient">Back</span></h1>
+            <p class="text-gray-400 font-medium">Log in to access your dashboard</p>
+        </div>
+
+        <div th:if="${param.error}"
+            class="bg-red-500/10 border border-red-500/50 text-red-500 p-4 rounded-2xl text-sm text-center font-bold">
+            <i class="fas fa-exclamation-circle mr-2"></i> Invalid credentials.
+        </div>
+
+        <form th:action="@{/login}" method="POST" class="space-y-6">
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Username</label>
+                <div class="relative group">
+                    <i
+                        class="fas fa-user absolute left-5 top-5 text-gray-600 group-focus-within:text-orange-500 transition"></i>
+                    <input type="text" name="username"
+                        class="w-full bg-white/5 border border-white/10 p-4 pl-14 rounded-2xl focus:border-orange-500 focus:bg-white/10 outline-none transition-all duration-300"
+                        placeholder="Your username" required>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Password</label>
+                <div class="relative group">
+                    <i
+                        class="fas fa-lock absolute left-5 top-5 text-gray-600 group-focus-within:text-orange-500 transition"></i>
+                    <input type="password" name="password"
+                        class="w-full bg-white/5 border border-white/10 p-4 pl-14 rounded-2xl focus:border-orange-500 focus:bg-white/10 outline-none transition-all duration-300"
+                        placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between text-sm px-1">
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <input type="checkbox" class="accent-orange-500 h-4 w-4 rounded">
+                    <span class="text-gray-400 group-hover:text-gray-300 transition">Keep me signed in</span>
+                </label>
+                <a href="#" class="text-orange-500 font-bold hover:text-orange-400 transition">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="w-full btn-premium py-5 text-lg justify-center mt-4">
+                Sign In <i class="fas fa-sign-in-alt ml-2"></i>
+            </button>
+        </form>
+
+        <div class="text-center pt-4">
+            <p class="text-gray-400 font-medium">
+                New learner? <a href="/register" class="text-orange-500 font-bold hover:underline ml-1">Create
+                    Account</a>
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

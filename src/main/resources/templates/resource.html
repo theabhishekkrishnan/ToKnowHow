@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${resource.title} + ' | ToKnowHow'">Resource | ToKnowHow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+    <style>
+        .plyr {
+            --plyr-color-main: #f97316;
+            --plyr-video-background: #000;
+        }
+
+        .plyr__video-embed {
+            position: relative;
+            overflow: hidden;
+            background: #000;
+            width: 100%;
+            aspect-ratio: 16/9;
+        }
+
+        .plyr__video-embed iframe {
+            position: absolute;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) scale(1.4) !important;
+            width: 100% !important;
+            height: 100% !important;
+            pointer-events: none;
+        }
+
+        /* Responsive Cropping Adjustment */
+        @media (max-width: 768px) {
+            .plyr__video-embed {
+                aspect-ratio: 16/9;
+            }
+
+            .plyr__video-embed iframe {
+                transform: translate(-50%, -50%) scale(1.55) !important;
+            }
+        }
+
+        .video-shield {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s ease-out;
+        }
+
+        .plyr--paused .video-shield {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .shield-icon {
+            font-size: clamp(40px, 10vw, 80px);
+            color: rgba(255, 255, 255, 0.25);
+            animation: pulse 2.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.2;
+            }
+
+            50% {
+                transform: scale(1.15);
+                opacity: 0.45;
+            }
+        }
+
+        .plyr--video .plyr__video-wrapper {
+            pointer-events: all;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white min-h-screen">
+    <nav class="glass px-8 py-4 flex justify-between items-center sticky top-0 z-50 border-b border-white/10">
+        <a href="/" class="text-2xl font-extrabold tracking-tighter">
+            TO<span class="text-orange-500">KNOW</span>HOW
+        </a>
+        <div class="flex items-center space-x-6">
+            <a href="/" class="hover:text-orange-500 transition font-medium text-sm">Back to Home</a>
+            <div sec:authorize="isAuthenticated()">
+                <div class="flex items-center gap-4">
+                    <span class="text-xs text-gray-500 font-bold uppercase tracking-widest hidden md:block"
+                        th:text="'Welcome, ' + ${#authentication.name}"></span>
+                    <a sec:authorize="hasRole('ADMIN')" href="/admin"
+                        class="px-5 py-2 rounded-full glass border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white transition text-xs font-bold uppercase">Admin</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="py-12 px-4 md:px-8 max-w-7xl mx-auto space-y-12 animate-fade-in">
+        <input type="hidden" id="resourceVideoLink" th:value="${resource.link}">
+        <input type="hidden" id="resourceIdVal" th:value="${resource.id}">
+
+        <div class="glass border-premium rounded-xl overflow-hidden shadow-2xl relative z-10">
+            <div id="player" data-plyr-provider="youtube"></div>
+            <div class="video-shield">
+                <div class="shield-icon">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+            </div>
+        </div>
+        <div class="p-8 md:p-12 glass border-premium rounded-xl mt-[-40px] pt-20 bg-zinc-950/20 shadow-xl">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span
+                            class="px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-500 text-[10px] font-black uppercase tracking-[0.2em]"
+                            th:text="${resource.category.name}">Category</span>
+                        <span
+                            class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-400 text-[10px] font-black uppercase tracking-[0.2em]"
+                            th:text="${resource.subcategory != null ? resource.subcategory.name : 'Uncategorized'}">Subcategory</span>
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4" th:text="${resource.title}">
+                        Resource Title</h1>
+                    <p class="text-gray-400 text-lg font-light leading-relaxed max-w-3xl"
+                        th:text="${resource.description}">Resource Detailed Description...</p>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div class="lg:col-span-1">
+                <div class="glass border-premium p-8 rounded-[32px] sticky top-32">
+                    <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                        <span class="w-1.5 h-6 bg-orange-500 rounded-full"></span>
+                        Leave a Comment
+                    </h3>
+                    <div sec:authorize="isAuthenticated()">
+                        <input type="hidden" id="currentUserName" th:value="${#authentication.name}">
+                        <form id="commentForm" class="space-y-4">
+                            <div class="space-y-2">
+                                <textarea id="commentContent" name="content"
+                                    class="w-full bg-white/5 border border-white/10 p-5 rounded-2xl focus:border-orange-500 outline-none transition h-32 shadow-inner text-sm leading-relaxed"
+                                    placeholder="Share your thoughts on this resource..." required></textarea>
+                            </div>
+                            <button type="submit"
+                                class="w-full btn-premium py-4 justify-center shadow-lg hover:shadow-orange-500/20">Post
+                                Comment</button>
+                        </form>
+                    </div>
+                    <div sec:authorize="isAnonymous()" class="text-center py-6">
+                        <p class="text-gray-500 text-sm mb-4">Please login to participate in the discussion.</p>
+                        <a href="/login"
+                            class="inline-block px-8 py-3 rounded-2xl border border-white/10 hover:bg-white/5 transition font-bold text-sm">Login
+                            to Comment</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 space-y-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-2xl font-bold flex items-center gap-3">
+                        <i class="far fa-comments text-orange-500"></i>
+                        Student Discussions
+                        <span id="commentCount"
+                            class="text-xs font-black text-white/20 bg-white/5 px-3 py-1 rounded-full border border-white/5"
+                            th:text="${comments.size()}">0</span>
+                    </h3>
+                </div>
+
+                <div th:if="${comments.isEmpty()}" id="noCommentsMessage"
+                    class="py-20 text-center glass rounded-[32px] border-dashed border-2 border-white/5">
+                    <i class="fas fa-comment-slash text-4xl text-gray-800 mb-4"></i>
+                    <p class="text-gray-600 italic">No comments yet. Be the first to start the conversation!</p>
+                </div>
+
+                <div id="commentsList" class="space-y-6">
+                    <div th:each="comment : ${comments}"
+                        class="glass border-premium p-6 rounded-[32px] flex gap-5 transition hover:border-white/10 group">
+                        <img th:src="'https://ui-avatars.com/api/?name=' + ${comment.user.fullName} + '&background=random&color=fff&rounded=true'"
+                            class="w-12 h-12 border border-white/10 p-0.5 rounded-2xl shadow-lg">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-bold text-white/90" th:text="${comment.user.fullName}">Student
+                                    Name</span>
+                                <span class="text-[10px] text-gray-600 font-black uppercase tracking-widest"
+                                    th:text="${#temporals.format(comment.createdAt, 'dd MMM yyyy')}">Date</span>
+                            </div>
+                            <p class="text-gray-400 text-sm font-light leading-relaxed group-hover:text-gray-300 transition"
+                                th:text="${comment.content}">Comment content...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-16 px-8 border-t border-white/5 text-center text-gray-600 mt-20">
+        <div class="text-xl font-extrabold mb-4 text-white/20 tracking-tighter">
+            TO<span class="text-orange-500/20">KNOW</span>HOW
+        </div>
+        <p class="text-sm tracking-widest uppercase">&copy; 2026 ToKnowHow Platform. Global Higher Intelligence.</p>
+    </footer>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            function getYouTubeId(url) {
+                if (!url) return "";
+                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+                const match = url.match(regExp);
+                return (match && match[2].length === 11) ? match[2] : url;
+            }
+
+            const rawLink = document.getElementById('resourceVideoLink').value;
+            const videoId = getYouTubeId(rawLink);
+            const playerEl = document.getElementById('player');
+            if (playerEl && videoId) {
+                playerEl.setAttribute('data-plyr-embed-id', videoId);
+
+                const player = new Plyr('#player', {
+                    controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay', 'fullscreen'],
+                    settings: ['quality', 'speed'],
+                    ratio: '16:9',
+                    youtube: { noCookie: true, rel: 0, showinfo: 0, iv_load_policy: 3, modestbranding: 1 }
+                });
+
+                player.on('ready', () => {
+                    const wrapper = document.querySelector('.plyr__video-wrapper');
+                    if (wrapper) {
+                        wrapper.addEventListener('click', () => {
+                            player.togglePlay();
+                        });
+                    }
+                });
+            }
+
+            const commentForm = document.getElementById('commentForm');
+            if (commentForm) {
+                const resourceId = document.getElementById('resourceIdVal').value;
+                const userNameInput = document.getElementById('currentUserName');
+                const userName = userNameInput ? userNameInput.value : 'Anonymous';
+
+                commentForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const contentInput = document.getElementById('commentContent');
+                    const content = contentInput.value;
+
+                    const formData = new FormData();
+                    formData.append('content', content);
+
+                    fetch(`/resource/${resourceId}/comment`, {
+                        method: 'POST',
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data) {
+                                contentInput.value = '';
+                                const noComm = document.getElementById('noCommentsMessage');
+                                if (noComm) noComm.style.display = 'none';
+
+                                const countSpan = document.getElementById('commentCount');
+                                countSpan.textContent = parseInt(countSpan.textContent) + 1;
+
+                                const list = document.getElementById('commentsList');
+                                const newCommentDiv = document.createElement('div');
+                                newCommentDiv.className = "glass border-premium p-6 rounded-[32px] flex gap-5 transition hover:border-white/10 group animate-fade-in";
+
+                                const now = new Date();
+                                const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+                                newCommentDiv.innerHTML = `
+                                <img src="https://ui-avatars.com/api/?name=${userName}&background=random&color=fff&rounded=true" 
+                                     class="w-12 h-12 border border-white/10 p-0.5 rounded-2xl shadow-lg">
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold text-white/90">${userName}</span>
+                                        <span class="text-[10px] text-gray-600 font-black uppercase tracking-widest">${dateStr}</span>
+                                    </div>
+                                    <p class="text-gray-400 text-sm font-light leading-relaxed group-hover:text-gray-300 transition">${data.content}</p>
+                                </div>
+                            `;
+                                list.prepend(newCommentDiv);
+                            }
+                        })
+                        .catch(err => console.error('Error posting comment:', err));
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

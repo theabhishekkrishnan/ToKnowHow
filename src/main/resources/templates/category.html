@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${category.name} + ' | ToKnowHow'">Category | ToKnowHow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .media-scroller {
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: 28%;
+            gap: 2rem;
+            overflow-x: auto;
+            overscroll-behavior-inline: contain;
+            padding: 1rem 0 3rem 0;
+            scroll-snap-type: inline mandatory;
+        }
+
+        @media (max-width: 1024px) {
+            .media-scroller {
+                grid-auto-columns: 45%;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .media-scroller {
+                grid-auto-columns: 85%;
+            }
+        }
+
+        .media-scroller::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .media-scroller::-webkit-scrollbar-thumb {
+            background: rgba(255, 137, 6, 0.4);
+            border-radius: 10px;
+        }
+
+        .media-scroller::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .media-element {
+            scroll-snap-align: start;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white min-h-screen">
+    <nav class="glass px-8 py-4 flex justify-between items-center sticky top-0 z-50 border-b border-white/10">
+        <a href="/" class="text-2xl font-extrabold tracking-tighter">
+            TO<span class="text-orange-500">KNOW</span>HOW
+        </a>
+        <div class="flex items-center space-x-6">
+            <a href="/" class="hover:text-orange-500 transition font-medium">Back to Home</a>
+            <div sec:authorize="isAuthenticated()">
+                <a sec:authorize="hasRole('ADMIN')" href="/admin"
+                    class="px-6 py-2 rounded-full glass border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white transition">Admin
+                    Dashboard</a>
+            </div>
+            <div sec:authorize="isAnonymous()">
+                <a href="/login"
+                    class="px-6 py-2 rounded-full border border-orange-500 hover:bg-orange-500 transition">Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="py-24 px-8 max-w-7xl mx-auto text-center border-b border-white/5 animate-fade-in relative">
+        <div
+            class="inline-block p-6 rounded-[32px] bg-gradient-premium mb-8 shadow-2xl relative z-10 border border-white/20">
+            <i th:class="${category.iconPath} + ' text-5xl text-white'"></i>
+        </div>
+        <h1 class="text-6xl md:text-7xl font-extrabold mb-6 tracking-tight" th:text="${category.name}">Category Name
+        </h1>
+        <p class="text-gray-400 text-xl max-w-2xl mx-auto leading-relaxed" th:text="${category.description}">
+            Category
+            Description</p>
+
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-orange-500/10 blur-[120px] rounded-full -z-10">
+        </div>
+    </header>
+
+    <main class="py-20 px-8 max-w-7xl mx-auto space-y-24">
+        <div th:each="sub : ${category.subcategories}" th:if="${not #lists.isEmpty(sub.resources)}" class="space-y-8">
+            <div class="flex items-center justify-between">
+                <h2 class="text-3xl font-bold flex items-center gap-4">
+                    <span class="w-2 h-8 bg-gradient-premium rounded-full"></span>
+                    <span th:text="${sub.name}"
+                        class="tracking-tight uppercase bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500">Subcategory</span>
+                </h2>
+                <div class="h-[1px] flex-1 bg-gradient-to-r from-white/10 to-transparent ml-8"></div>
+            </div>
+
+            <div class="media-scroller snaps-inline">
+                <div th:each="resource : ${resources}"
+                    th:if="${resource.subcategory != null && resource.subcategory.id == sub.id}"
+                    class="media-element glass border-premium p-8 rounded-[40px] hover:border-orange-500/50 transition-all duration-500 group flex flex-col h-full hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+
+                    <div
+                        class="relative mb-6 rounded-3xl overflow-hidden aspect-video bg-zinc-900 group-hover:scale-[1.02] transition duration-500 shadow-xl border border-white/5">
+                        <div
+                            class="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/10 transition duration-500">
+                            <i
+                                class="fas fa-play-circle text-6xl text-white/30 group-hover:text-orange-500 group-hover:scale-110 transition duration-500 shadow-2xl"></i>
+                        </div>
+                    </div>
+
+                    <h3 class="text-2xl font-extrabold mb-3 group-hover:text-orange-500 transition-colors tracking-tight"
+                        th:text="${resource.title}">Resource Title</h3>
+                    <p class="text-gray-400 mb-8 line-clamp-3 text-sm leading-relaxed font-light"
+                        th:text="${resource.description}">Resource Description...</p>
+
+                    <div class="mt-auto flex items-center justify-between pt-6 border-t border-white/10">
+                        <span
+                            class="flex items-center gap-2 text-[10px] font-black text-orange-500 uppercase tracking-[0.2em]">
+                            <i class="fas fa-crown"></i> Exclusive
+                        </span>
+                        <a th:href="@{'/resource/' + ${resource.id}}"
+                            class="px-6 py-3 bg-white/5 border border-white/10 hover:border-orange-500 hover:bg-orange-500 rounded-2xl font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 shadow-lg">
+                            Watch Now <i class="fas fa-chevron-right text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(resources)}"
+            class="py-32 text-center glass rounded-[48px] border-dashed border-2 border-white/10 max-w-4xl mx-auto shadow-2xl">
+            <div
+                class="w-32 h-32 bg-zinc-900 border border-white/10 rounded-full flex items-center justify-center mx-auto mb-10 shadow-inner">
+                <i class="fas fa-folder-open text-5xl text-gray-700 animate-bounce"></i>
+            </div>
+            <h3 class="text-4xl font-black text-white/50 mb-6 uppercase tracking-widest">No Content Found</h3>
+            <p class="text-gray-500 text-xl leading-relaxed max-w-lg mx-auto">Our team is currently finalizing
+                premium
+                materials for this category. Stay tuned for expert-curated content.</p>
+            <a href="/" class="mt-12 inline-flex items-center gap-3 btn-premium">
+                <i class="fas fa-home text-sm"></i> Back to Exploration
+            </a>
+        </div>
+    </main>
+
+    <footer class="py-16 px-8 border-t border-white/5 text-center text-gray-600 mt-20">
+        <div class="text-xl font-extrabold mb-4 text-white/20 tracking-tighter">
+            TO<span class="text-orange-500/20">KNOW</span>HOW
+        </div>
+        <p class="text-sm tracking-widest uppercase">&copy; 2026 ToKnowHow Platform. Higher Intelligence.</p>
+    </footer>
+</body>
+
+</html>

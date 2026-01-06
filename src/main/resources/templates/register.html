@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | ToKnowHow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .gradient-circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.2;
+            z-index: -1;
+        }
+    </style>
+</head>
+
+<body class="bg-black">
+    <div class="gradient-circle bg-orange-600 w-80 h-80 top-1/4 left-1/4"></div>
+    <div class="gradient-circle bg-pink-600 w-64 h-64 bottom-1/4 right-1/4"></div>
+
+    <div class="glass p-10 md:p-12 rounded-[40px] w-full max-w-lg shadow-2xl space-y-10 animate-fade-in relative">
+        <a href="/" class="absolute -top-16 left-0 text-gray-500 hover:text-white transition flex items-center gap-2">
+            <i class="fas fa-arrow-left text-xs"></i> Back to Home
+        </a>
+
+        <div class="text-center">
+            <h1 class="text-4xl font-extrabold mb-3 tracking-tight">Join <span class="text-gradient">ToKnowHow</span>
+            </h1>
+            <p class="text-gray-400 font-medium">Start your learning journey today</p>
+        </div>
+
+        <form th:action="@{/register}" th:object="${user}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-2 md:col-span-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
+                <div class="relative group">
+                    <i
+                        class="fas fa-id-card absolute left-5 top-5 text-gray-600 group-focus-within:text-orange-500 transition"></i>
+                    <input type="text" th:field="*{fullName}"
+                        class="w-full bg-white/5 border border-white/10 p-4 pl-14 rounded-2xl focus:border-orange-500 focus:bg-white/10 outline-none transition-all duration-300"
+                        placeholder="John Doe" required>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Username</label>
+                <div class="relative group">
+                    <i
+                        class="fas fa-user absolute left-5 top-5 text-gray-600 group-focus-within:text-orange-500 transition"></i>
+                    <input type="text" th:field="*{username}"
+                        class="w-full bg-white/5 border border-white/10 p-4 pl-14 rounded-2xl focus:border-orange-500 focus:bg-white/10 outline-none transition-all duration-300"
+                        placeholder="johndoe123" required>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Email</label>
+                <div class="relative group">
+                    <i
+                        class="fas fa-envelope absolute left-5 top-5 text-gray-600 group-focus-within:text-orange-500 transition"></i>
+                    <input type="email" th:field="*{email}"
+                        class="w-full bg-white/5 border border-white/10 p-4 pl-14 rounded-2xl focus:border-orange-500 focus:bg-white/10 outline-none transition-all duration-300"
+                        placeholder="john@example.com" required>
+                </div>
+            </div>
+
+            <div class="space-y-2 md:col-span-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Password</label>
+                <div class="relative group">
+                    <i
+                        class="fas fa-lock absolute left-5 top-5 text-gray-600 group-focus-within:text-orange-500 transition"></i>
+                    <input type="password" th:field="*{password}"
+                        class="w-full bg-white/5 border border-white/10 p-4 pl-14 rounded-2xl focus:border-orange-500 focus:bg-white/10 outline-none transition-all duration-300"
+                        placeholder="Min. 8 characters" required>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full btn-premium py-5 text-lg justify-center md:col-span-2 mt-4">
+                Create Account <i class="fas fa-user-plus ml-2"></i>
+            </button>
+        </form>
+
+        <div class="text-center pt-4">
+            <p class="text-gray-400 font-medium">
+                Already have an account? <a href="/login" class="text-orange-500 font-bold hover:underline ml-1">Sign
+                    In</a>
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

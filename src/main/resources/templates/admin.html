@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | ToKnowHow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            background: #0a0a0a;
+        }
+
+        .sidebar {
+            background: #000000;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            height: 100vh;
+            position: fixed;
+            width: 280px;
+            z-index: 50;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .sidebar span,
+            .sidebar .logo-text {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+
+        .table-glass {
+            background: rgba(255, 255, 255, 0.01);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-link.active {
+            background: rgba(255, 137, 6, 0.1);
+            color: #ff8906;
+            border-right: 3px solid #ff8906;
+        }
+    </style>
+</head>
+
+<body class="text-white">
+    <!-- Sidebar -->
+    <div class="sidebar p-8 flex flex-col justify-between border-r border-white/10">
+        <div>
+            <div class="text-2xl font-extrabold mb-12 flex items-center gap-3">
+                <div
+                    class="w-10 h-10 bg-gradient-premium rounded-xl flex items-center justify-center border border-white/20">
+                    <i class="fas fa-university text-sm text-white"></i>
+                </div>
+                <span class="logo-text">TO<span class="text-orange-500">KNOW</span>HOW</span>
+            </div>
+
+            <nav class="space-y-4">
+                <a href="/admin"
+                    class="nav-link active flex items-center space-x-4 p-4 rounded-xl transition-all border border-transparent hover:border-white/5">
+                    <i class="fas fa-th-large w-5"></i> <span class="font-semibold">Dashboard</span>
+                </a>
+                <a href="#categories-section"
+                    class="nav-link flex items-center space-x-4 p-4 rounded-xl hover:bg-white/5 transition-all text-gray-500 hover:text-white border border-transparent hover:border-white/5">
+                    <i class="fas fa-folder w-5"></i> <span class="font-semibold">Categories</span>
+                </a>
+                <a href="#resources-section"
+                    class="nav-link flex items-center space-x-4 p-4 rounded-xl hover:bg-white/5 transition-all text-gray-500 hover:text-white border border-transparent hover:border-white/5">
+                    <i class="fas fa-play-circle w-5"></i> <span class="font-semibold">Resources</span>
+                </a>
+                <a href="#users-section"
+                    class="nav-link flex items-center space-x-4 p-4 rounded-xl hover:bg-white/5 transition-all text-gray-500 hover:text-white border border-transparent hover:border-white/5">
+                    <i class="fas fa-users w-5"></i> <span class="font-semibold">Users</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="space-y-2">
+            <a href="/"
+                class="flex items-center space-x-4 p-4 rounded-xl hover:bg-white/5 transition-all text-gray-400 hover:text-white border border-transparent hover:border-white/10">
+                <i class="fas fa-home w-5"></i> <span class="font-semibold">Back to Site</span>
+            </a>
+            <form th:action="@{/logout}" method="POST">
+                <button type="submit"
+                    class="w-full flex items-center space-x-4 p-4 rounded-xl hover:bg-red-500/10 transition-all text-red-500 border border-transparent hover:border-red-500/20">
+                    <i class="fas fa-sign-out-alt w-5"></i> <span class="font-semibold">Logout</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="flex justify-between items-center mb-12">
+            <div>
+                <h1 class="text-4xl font-extrabold tracking-tight">System <span class="text-gradient">Overview</span>
+                </h1>
+                <p class="text-gray-500 font-medium mt-1 uppercase tracking-widest text-[10px]">Administrative Control
+                    Center</p>
+            </div>
+            <div class="flex items-center space-x-6">
+                <div class="relative group">
+                    <i
+                        class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within:text-orange-500 transition"></i>
+                    <input type="text"
+                        class="bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-6 outline-none focus:border-orange-500 transition w-64 shadow-inner"
+                        placeholder="Search system data...">
+                </div>
+                <img src="https://ui-avatars.com/api/?name=Admin&background=ff8906&color=fff" alt="Admin"
+                    class="w-12 h-12 rounded-2xl border-2 border-orange-500/40 shadow-[0_0_20px_rgba(255,137,6,0.2)]">
+            </div>
+        </header>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div
+                class="glass border-premium p-8 rounded-[32px] border-orange-500/10 group hover:border-orange-500/40 transition duration-500 hover:shadow-[0_15px_30px_rgba(0,0,0,0.3)]">
+                <div
+                    class="w-14 h-14 bg-orange-500/10 border border-orange-500/20 rounded-2xl flex items-center justify-center text-orange-500 mb-6 group-hover:scale-110 transition shadow-lg">
+                    <i class="fas fa-layer-group text-2xl"></i>
+                </div>
+                <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Categories</div>
+                <div class="text-4xl font-extrabold" th:text="${categories.size()}">0</div>
+            </div>
+            <div
+                class="glass border-premium p-8 rounded-[32px] border-pink-500/10 group hover:border-pink-500/40 transition duration-500 hover:shadow-[0_15px_30px_rgba(0,0,0,0.3)]">
+                <div
+                    class="w-14 h-14 bg-pink-500/10 border border-pink-500/20 rounded-2xl flex items-center justify-center text-pink-500 mb-6 group-hover:scale-110 transition shadow-lg">
+                    <i class="fas fa-video text-2xl"></i>
+                </div>
+                <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Resources</div>
+                <div class="text-4xl font-extrabold" th:text="${resources.size()}">0</div>
+            </div>
+            <div
+                class="glass border-premium p-8 rounded-[32px] border-indigo-500/10 group hover:border-indigo-500/40 transition duration-500 hover:shadow-[0_15px_30px_rgba(0,0,0,0.3)]">
+                <div
+                    class="w-14 h-14 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-500 mb-6 group-hover:scale-110 transition shadow-lg">
+                    <i class="fas fa-graduation-cap text-2xl"></i>
+                </div>
+                <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Active Students</div>
+                <div class="text-4xl font-extrabold" th:text="${users.size()}">0</div>
+            </div>
+            <div
+                class="glass border-premium p-8 rounded-[32px] border-green-500/10 group hover:border-green-500/40 transition duration-500 hover:shadow-[0_15px_30px_rgba(0,0,0,0.3)]">
+                <div
+                    class="w-14 h-14 bg-green-500/10 border border-green-500/20 rounded-2xl flex items-center justify-center text-green-500 mb-6 group-hover:scale-110 transition shadow-lg">
+                    <i class="fas fa-chart-line text-2xl"></i>
+                </div>
+                <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Daily Traffic</div>
+                <div class="text-4xl font-extrabold">1.2K</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <!-- Forms -->
+            <div id="categories-section" class="space-y-10">
+                <div class="glass border-premium p-10 rounded-[44px] border-white/5 relative overflow-hidden">
+                    <h2 class="text-2xl font-bold mb-8 flex items-center gap-4 relative z-10">
+                        <span
+                            class="p-3 bg-orange-500/10 border border-orange-500/20 rounded-xl text-orange-500 shadow-lg"><i
+                                class="fas fa-plus"></i></span>
+                        Create New Category
+                    </h2>
+                    <form action="/admin/category/add" method="POST" class="space-y-6 relative z-10">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Category
+                                Name</label>
+                            <input type="text" name="name"
+                                class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-orange-500 outline-none transition shadow-inner"
+                                placeholder="e.g. Artificial Intelligence" required>
+                        </div>
+                        <div class="space-y-4">
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Select
+                                Category Icon</label>
+                            <div class="grid grid-cols-5 gap-3 p-4 bg-white/5 border border-white/10 rounded-2xl shadow-inner max-h-40 overflow-y-auto custom-scrollbar"
+                                id="iconGrid">
+                                <!-- Icons will be selected here -->
+                                <div class="icon-option p-4 rounded-xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-orange-500/10 transition group"
+                                    data-icon="fas fa-briefcase">
+                                    <i class="fas fa-briefcase text-xl text-gray-500 group-hover:text-orange-500"></i>
+                                </div>
+                                <div class="icon-option p-4 rounded-xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-orange-500/10 transition group"
+                                    data-icon="fas fa-laptop-code">
+                                    <i class="fas fa-laptop-code text-xl text-gray-500 group-hover:text-orange-500"></i>
+                                </div>
+                                <div class="icon-option p-4 rounded-xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-orange-500/10 transition group"
+                                    data-icon="fas fa-book-open">
+                                    <i class="fas fa-book-open text-xl text-gray-500 group-hover:text-orange-500"></i>
+                                </div>
+                                <div class="icon-option p-4 rounded-xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-orange-500/10 transition group"
+                                    data-icon="fas fa-certificate">
+                                    <i class="fas fa-certificate text-xl text-gray-500 group-hover:text-orange-500"></i>
+                                </div>
+                                <div class="icon-option p-4 rounded-xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-orange-500/10 transition group"
+                                    data-icon="fas fa-graduation-cap">
+                                    <i
+                                        class="fas fa-graduation-cap text-xl text-gray-500 group-hover:text-orange-500"></i>
+                                </div>
+                                <div class="icon-option p-4 rounded-xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-orange-500/10 transition group"
+                                    data-icon="fas fa-user-tie">
+                                    <i class="fas fa-user-tie text-xl text-gray-500 group-hover:text-orange-500"></i>
+                                </div>
+                                <div class="icon-option p-4 rounded-xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-orange-500/10 transition group"
+                                    data-icon="fas fa-code">
+                                    <i class="fas fa-code text-xl text-gray-500 group-hover:text-orange-500"></i>
+                                </div>
+                                <div class="icon-option p-4 rounded-xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-orange-500/10 transition group"
+                                    data-icon="fas fa-database">
+                                    <i class="fas fa-database text-xl text-gray-500 group-hover:text-orange-500"></i>
+                                </div>
+                                <div class="icon-option p-4 rounded-xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-orange-500/10 transition group"
+                                    data-icon="fas fa-brain">
+                                    <i class="fas fa-brain text-xl text-gray-500 group-hover:text-orange-500"></i>
+                                </div>
+                                <div class="icon-option p-4 rounded-xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-orange-500/10 transition group"
+                                    data-icon="fas fa-chart-line">
+                                    <i class="fas fa-chart-line text-xl text-gray-500 group-hover:text-orange-500"></i>
+                                </div>
+                                <div class="icon-option p-4 rounded-xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-orange-500/10 transition group"
+                                    data-icon="fas fa-microchip">
+                                    <i class="fas fa-microchip text-xl text-gray-500 group-hover:text-orange-500"></i>
+                                </div>
+                                <div class="icon-option p-4 rounded-xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-orange-500/10 transition group"
+                                    data-icon="fas fa-language">
+                                    <i class="fas fa-language text-xl text-gray-500 group-hover:text-orange-500"></i>
+                                </div>
+                                <div class="icon-option p-4 rounded-xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-orange-500/10 transition group"
+                                    data-icon="fas fa-pencil-alt">
+                                    <i class="fas fa-pencil-alt text-xl text-gray-500 group-hover:text-orange-500"></i>
+                                </div>
+                                <div class="icon-option p-4 rounded-xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-orange-500/10 transition group"
+                                    data-icon="fas fa-globe">
+                                    <i class="fas fa-globe text-xl text-gray-500 group-hover:text-orange-500"></i>
+                                </div>
+                                <div class="icon-option p-4 rounded-xl border border-white/5 flex items-center justify-center cursor-pointer hover:bg-orange-500/10 transition group"
+                                    data-icon="fas fa-mobile-alt">
+                                    <i class="fas fa-mobile-alt text-xl text-gray-500 group-hover:text-orange-500"></i>
+                                </div>
+                            </div>
+                            <!-- Hidden input to store chosen icon -->
+                            <input type="hidden" name="iconPath" id="selectedIcon" value="fas fa-briefcase" required>
+                        </div>
+                        <div class="space-y-2">
+                            <label
+                                class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Description</label>
+                            <textarea name="description"
+                                class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-orange-500 outline-none transition h-32 shadow-inner"
+                                placeholder="Tell students what this category is about..." required></textarea>
+                        </div>
+                        <button type="submit"
+                            class="w-full btn-premium py-4 justify-center shadow-lg hover:shadow-orange-500/20">Create
+                            Module</button>
+                    </form>
+                    <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-orange-500/5 blur-[80px] rounded-full"></div>
+                </div>
+            </div>
+
+            <!-- Subcategory Form -->
+            <div id="subcategories-section" class="space-y-10">
+                <div class="glass border-premium p-10 rounded-[44px] border-white/5 relative overflow-hidden">
+                    <h2 class="text-2xl font-bold mb-8 flex items-center gap-4 relative z-10">
+                        <span
+                            class="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-500 shadow-lg"><i
+                                class="fas fa-sitemap"></i></span>
+                        Create New Subcategory
+                    </h2>
+                    <form action="/admin/subcategory/add" method="POST" class="space-y-6 relative z-10">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Parent
+                                Category</label>
+                            <select name="categoryId"
+                                class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-indigo-500 outline-none transition appearance-none shadow-inner">
+                                <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"
+                                    class="bg-zinc-900">Category</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Subcategory
+                                Name</label>
+                            <input type="text" name="name"
+                                class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-indigo-500 outline-none transition shadow-inner"
+                                placeholder="e.g. Core Java, React Hooks..." required>
+                        </div>
+                        <button type="submit"
+                            class="w-full btn-premium py-4 justify-center !from-indigo-500 !to-blue-500 shadow-lg"
+                            style="background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);">Add
+                            Subcategory</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="resources-section" class="space-y-10 lg:col-span-2">
+                <div class="glass border-premium p-10 rounded-[44px] border-white/5 relative overflow-hidden">
+                    <h2 class="text-2xl font-bold mb-8 flex items-center gap-4 relative z-10">
+                        <span class="p-3 bg-pink-500/10 border border-pink-500/20 rounded-xl text-pink-500 shadow-lg"><i
+                                class="fas fa-film"></i></span>
+                        Publish New Resource
+                    </h2>
+                    <form action="/admin/resource/add" method="POST" class="space-y-6 relative z-10">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Resource
+                                    Title</label>
+                                <input type="text" name="title"
+                                    class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-pink-500 outline-none transition shadow-inner"
+                                    placeholder="e.g. Master React in 10 Days" required>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Content
+                                    Format</label>
+                                <input type="text" name="type" placeholder="e.g. Video Tutorial"
+                                    class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-pink-500 outline-none transition shadow-inner">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Link To
+                                    Category</label>
+                                <select name="categoryId" id="categorySelect"
+                                    class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-pink-500 outline-none transition appearance-none shadow-inner">
+                                    <option value="">Select Category</option>
+                                    <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"
+                                        class="bg-zinc-900">Category</option>
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Link To
+                                    Subcategory</label>
+                                <select name="subcategoryId" id="subcategorySelect"
+                                    class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-pink-500 outline-none transition appearance-none shadow-inner">
+                                    <option value="">Choose Parent Category First</option>
+                                    <option th:each="sub : ${subcategories}" th:value="${sub.id}" th:text="${sub.name}"
+                                        th:data-category="${sub.category.id}" class="bg-zinc-900 sub-opt hidden">
+                                        Subcategory</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Source Link
+                                (Embed URL)</label>
+                            <input type="url" name="link"
+                                class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-pink-500 outline-none transition shadow-inner"
+                                placeholder="https://youtube.com/embed/..." required>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Short
+                                Description</label>
+                            <textarea name="description"
+                                class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl focus:border-pink-500 outline-none transition h-20 shadow-inner"
+                                placeholder="Summary for student preview..." required></textarea>
+                        </div>
+                        <button type="submit"
+                            class="w-full btn-premium py-4 justify-center !from-pink-500 !to-indigo-500 shadow-lg hover:shadow-pink-500/20">Publish
+                            Now</button>
+                    </form>
+                    <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-pink-500/5 blur-[80px] rounded-full"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Tables -->
+        <div id="resources-list" class="mt-12">
+            <div class="table-glass p-8 border border-white/10 shadow-2xl">
+                <h3 class="text-2xl font-bold mb-8 flex items-center gap-3">
+                    <span class="w-1.5 h-6 bg-gradient-premium rounded-full"></span>
+                    Professional Content Library
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-gray-500 border-b border-white/10">
+                                <th class="pb-6 font-bold uppercase text-[10px] tracking-[0.2em] pl-4">Resource Details
+                                </th>
+                                <th class="pb-6 font-bold uppercase text-[10px] tracking-[0.2em]">Category</th>
+                                <th class="pb-6 font-bold uppercase text-[10px] tracking-[0.2em]">Subcategory</th>
+                                <th class="pb-6 font-bold uppercase text-[10px] tracking-[0.2em]">Format</th>
+                                <th class="pb-6 font-bold uppercase text-[10px] tracking-[0.2em] text-right pr-4">
+                                    Management</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            <tr th:if="${resources.isEmpty()}">
+                                <td colspan="4" class="py-12 text-center text-gray-600 italic">
+                                    <i class="fas fa-info-circle mr-2"></i> No resources available in the library.
+                                </td>
+                            </tr>
+                            <tr th:each="res : ${resources}"
+                                class="group hover:bg-white/[0.03] transition-colors border-b border-white/5 last:border-0">
+                                <td class="py-6 pl-4">
+                                    <div class="font-bold group-hover:text-orange-500 transition tracking-tight"
+                                        th:text="${res.title}">Title</div>
+                                    <div class="text-xs text-gray-500 truncate max-w-sm mt-1"
+                                        th:text="${res.description}">
+                                        Description</div>
+                                </td>
+                                <td class="py-6">
+                                    <span
+                                        class="px-3 py-1 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-500 text-[10px] font-bold uppercase tracking-widest"
+                                        th:text="${res.category.name}">Category</span>
+                                </td>
+                                <td class="py-6">
+                                    <span class="text-gray-400 text-xs font-semibold uppercase tracking-wider"
+                                        th:text="${res.subcategory != null ? res.subcategory.name : 'N/A'}">Subcategory</span>
+                                </td>
+                                <td class="py-6">
+                                    <span class="text-gray-400 text-xs font-semibold"
+                                        th:text="${res.type}">Format</span>
+                                </td>
+                                <td class="py-6 text-right pr-4">
+                                    <div class="flex items-center justify-end gap-3 transition-all">
+                                        <a th:href="${res.link}" target="_blank"
+                                            class="p-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-gray-400 hover:text-white transition"><i
+                                                class="fas fa-external-link-alt text-xs"></i></a>
+                                        <a th:href="'/admin/resource/delete/' + ${res.id}"
+                                            class="p-2.5 bg-red-500/5 hover:bg-red-500/20 border border-red-500/10 rounded-xl text-red-500 transition"
+                                            onclick="return confirm('Secure Delete: This action cannot be undone. Continue?')"><i
+                                                class="fas fa-trash-alt text-xs"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="users-section" class="mt-12 mb-20">
+            <div class="table-glass p-8 border border-white/10 shadow-2xl">
+                <h3 class="text-2xl font-bold mb-8 flex items-center gap-3">
+                    <span class="w-1.5 h-6 bg-pink-500 rounded-full"></span>
+                    Student Management System
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-gray-500 border-b border-white/10">
+                                <th class="pb-6 font-bold uppercase text-[10px] tracking-[0.2em] pl-4">Member</th>
+                                <th class="pb-6 font-bold uppercase text-[10px] tracking-[0.2em]">Contact Information
+                                </th>
+                                <th class="pb-6 font-bold uppercase text-[10px] tracking-[0.2em]">Access Level</th>
+                                <th class="pb-6 font-bold uppercase text-[10px] tracking-[0.2em] text-right pr-4">
+                                    Privileges</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            <tr th:if="${users.isEmpty()}">
+                                <td colspan="4" class="py-12 text-center text-gray-600 italic">
+                                    <i class="fas fa-users-slash mr-2"></i> No students registered yet.
+                                </td>
+                            </tr>
+                            <tr th:each="u : ${users}"
+                                class="group hover:bg-white/[0.03] transition-colors border-b border-white/5 last:border-0">
+                                <td class="py-6 flex items-center gap-4 pl-4">
+                                    <img th:src="'https://ui-avatars.com/api/?name=' + ${u.fullName} + '&background=random&color=fff&rounded=true'"
+                                        class="w-11 h-11 border border-white/10 shadow-lg p-0.5">
+                                    <div>
+                                        <div class="font-bold tracking-tight text-white/90" th:text="${u.fullName}">Name
+                                        </div>
+                                        <div class="text-[10px] text-gray-500 uppercase font-black"
+                                            th:text="'ID: ' + ${u.username}">Username</div>
+                                    </div>
+                                </td>
+                                <td class="py-6 text-gray-400 text-sm font-medium" th:text="${u.email}">Email</td>
+                                <td class="py-6">
+                                    <span
+                                        th:class="${u.role == 'ROLE_ADMIN' ? 'px-3 py-1 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-500 text-[10px] font-black uppercase tracking-widest' : 'px-3 py-1 rounded-lg bg-zinc-800 border border-white/5 text-gray-500 text-[10px] font-bold uppercase tracking-widest'}"
+                                        th:text="${u.role == 'ROLE_ADMIN' ? 'Administrator' : 'Student Learner'}">Role</span>
+                                </td>
+                                <td class="py-6 text-right pr-4">
+                                    <a th:if="${u.username != 'admin'}" th:href="'/admin/user/delete/' + ${u.id}"
+                                        class="px-4 py-2 bg-red-500/5 hover:bg-red-500/20 border border-red-500/10 rounded-xl text-red-500 transition-all text-xs font-bold"
+                                        onclick="return confirm('Revoke Access: This user will be permanently removed. Proceed?')">
+                                        <i class="fas fa-user-minus mr-2"></i> Revoke
+                                    </a>
+                                    <span th:if="${u.username == 'admin'}"
+                                        class="text-[10px] text-gray-700 font-bold uppercase tracking-widest italic pr-4">Protected
+                                        Root Account</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Icon Selection Logic
+        const iconOptions = document.querySelectorAll('.icon-option');
+        const selectedIconInput = document.getElementById('selectedIcon');
+
+        iconOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                // Remove active classes from all
+                iconOptions.forEach(opt => {
+                    opt.classList.remove('bg-orange-500/20', 'border-orange-500/50');
+                    opt.querySelector('i').classList.remove('text-orange-500');
+                    opt.querySelector('i').classList.add('text-gray-500');
+                });
+
+                // Add active classes to current
+                option.classList.add('bg-orange-500/20', 'border-orange-500/50');
+                const icon = option.querySelector('i');
+                icon.classList.remove('text-gray-500');
+                icon.classList.add('text-orange-500');
+
+                // Update hidden input
+                selectedIconInput.value = option.dataset.icon;
+            });
+        });
+
+        // Dependent Dropdown for Subcategories
+        const categorySelect = document.getElementById('categorySelect');
+        const subcategorySelect = document.getElementById('subcategorySelect');
+        const subOptions = document.querySelectorAll('.sub-opt');
+
+        categorySelect.addEventListener('change', function () {
+            const selectedCatId = this.value;
+
+            // Clear current options but keep the hidden sub-options preserved in memory (they are already in DOM)
+            // We'll rebuild the select content
+            subcategorySelect.innerHTML = '';
+
+            if (!selectedCatId) {
+                const opt = document.createElement('option');
+                opt.value = "";
+                opt.textContent = "Choose Parent Category First";
+                subcategorySelect.appendChild(opt);
+            } else {
+                let hasSubs = false;
+
+                // Create "Select Subcategory" placeholder
+                const placeholder = document.createElement('option');
+                placeholder.value = "";
+                placeholder.textContent = "Select Subcategory";
+                placeholder.className = "bg-zinc-900";
+                subcategorySelect.appendChild(placeholder);
+
+                subOptions.forEach(opt => {
+                    if (opt.dataset.category === selectedCatId) {
+                        const newOpt = opt.cloneNode(true);
+                        newOpt.classList.remove('hidden');
+                        subcategorySelect.appendChild(newOpt);
+                        hasSubs = true;
+                    }
+                });
+
+                if (!hasSubs) {
+                    subcategorySelect.innerHTML = '<option value="">No subcategories available</option>';
+                }
+            }
+            subcategorySelect.value = "";
+        });
+
+        // Initialize first icon as selected
+        if (iconOptions.length > 0) {
+            iconOptions[0].click();
+        }
+    </script>
+</body>
+
+</html>

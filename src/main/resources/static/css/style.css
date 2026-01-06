@@ -1,0 +1,129 @@
+:root {
+    --primary: #ff8906;
+    --secondary: #ff4081;
+    --accent: #6366f1;
+    --bg-dark: #050505;
+    --bg-card: rgba(255, 255, 255, 0.05);
+    --border: rgba(255, 255, 255, 0.1);
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    overflow-x: hidden;
+}
+
+.glass {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+}
+
+.border-premium {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.border-glow {
+    border: 1px solid rgba(255, 137, 6, 0.2);
+    box-shadow: 0 0 15px rgba(255, 137, 6, 0.1);
+}
+
+.text-gradient {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.bg-gradient-premium {
+    background: var(--gradient);
+}
+
+.card-hover {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+    transform: translateY(-8px);
+    border-color: rgba(255, 137, 6, 0.4);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.btn-premium {
+    background: var(--gradient);
+    padding: 0.75rem 2rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-premium:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(255, 137, 6, 0.3);
+}
+
+.btn-outline {
+    border: 1px solid var(--primary);
+    padding: 0.75rem 2rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    transition: all 0.3s;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-outline:hover {
+    background: rgba(255, 137, 6, 0.1);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+}
