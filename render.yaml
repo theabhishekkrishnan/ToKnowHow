@@ -1,0 +1,38 @@
+databases:
+  - name: toknowhow-db
+    databaseName: educationdb
+    user: toknowhow_user
+    plan: free
+
+services:
+  - type: web
+    name: toknowhow-app
+    runtime: docker
+    repo: https://github.com/theabhishekkrishnan/ToKnowHow
+    plan: free
+    branch: main
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: toknowhow-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: toknowhow-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: toknowhow-db
+          property: database
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: toknowhow-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: toknowhow-db
+          property: password
+      - key: ADMIN_USERNAME
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        generateValue: true
